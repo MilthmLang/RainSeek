@@ -5,7 +5,8 @@ namespace RainSeek.Tokenizer
     public class BasicTokenizer : ITokenizer
     {
         public IReadOnlyList<string> Delimiters { get; set; } = new[] { " " };
-        public bool CaseSensitive { get; set; } = true;
+
+        public bool CaseSensitive { get; set; } = false;
 
         public IReadOnlyList<Token> Tokenize(string documentId, string input)
         {
