@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace RainSeed.Tests.Application;
+namespace RainSeed.Tests.Storage;
 
 [Index(nameof(Token), Name = "token_index", IsUnique = true)]
 [Table("tokens")]

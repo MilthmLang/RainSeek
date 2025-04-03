@@ -18,6 +18,7 @@ public class BasicTokenizerTest
         Assert.AreEqual(2, tokens.Count);
         Assert.AreEqual(new Token()
         {
+            Id = -1,
             DocumentId = "",
             Value = "Hello",
             StartPosition = 0,
@@ -25,6 +26,7 @@ public class BasicTokenizerTest
         }, tokens[0]);
         Assert.AreEqual(new Token()
         {
+            Id = -1,
             DocumentId = "",
             Value = "World",
             StartPosition = 6,
@@ -44,6 +46,7 @@ public class BasicTokenizerTest
         Assert.AreEqual(2, tokens.Count);
         Assert.AreEqual(new Token()
         {
+            Id = -1,
             DocumentId = "",
             Value = "Hello",
             StartPosition = 0,
@@ -51,6 +54,7 @@ public class BasicTokenizerTest
         }, tokens[0]);
         Assert.AreEqual(new Token()
         {
+            Id = -1,
             DocumentId = "",
             Value = "World",
             StartPosition = 7,

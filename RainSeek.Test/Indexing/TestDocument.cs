@@ -1,6 +1,4 @@
-using System;
-
-namespace RainSeed.Tests.Application;
+namespace RainSeed.Tests.Indexing;
 
 public class TestDocument
 {

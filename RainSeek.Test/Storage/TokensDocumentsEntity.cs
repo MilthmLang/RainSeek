@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace RainSeed.Tests.Application;
+namespace RainSeed.Tests.Storage;
 
 [Index(nameof(TokenId), nameof(DocumentId), Name = "token_id_document_id")]
 [Index(nameof(DocumentId), nameof(TokenId), Name = "document_id_token_id")]

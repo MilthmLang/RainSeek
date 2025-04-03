@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RainSeed.Tests.Storage;
 using RainSeek.Indexing;
 using RainSeek.Tokenizer;
 
-namespace RainSeed.Tests.Application;
+namespace RainSeed.Tests.Indexing;
 
 [TestClass]
-public class ApplicationTest
+public class BasicTokenizerIndexingTest
 {
     private static IndexService _indexService = null!;
     private static List<TestDocument> _documents = null!;
@@ -18,9 +19,9 @@ public class ApplicationTest
     [ClassInitialize]
     public static void Init(TestContext ctx)
     {
-        var path = Path.Combine(Environment.CurrentDirectory, "test_index.db");
+        var path = Path.Combine(Environment.CurrentDirectory, "basic_tokenizer_indexing_test.db");
         File.Delete(path);
-        var storage = new TestStorage("test_index", path);
+        var storage = new TestStorage("basic_tokenizer_indexing_test", path);
         var tokenizers = new[]
         {
             new BasicTokenizer()
@@ -29,7 +30,7 @@ public class ApplicationTest
                 CaseSensitive = false
             }
         };
-        var indexService = new IndexService("test_index", tokenizers, storage);
+        var indexService = new IndexService("basic_tokenizer_indexing_test", tokenizers, storage);
 
         _storage = storage;
         _indexService = indexService;
@@ -39,7 +40,7 @@ public class ApplicationTest
             new TestDocument() { Id = "2", Content = "A journey of a thousand miles begins with a single step" },
             new TestDocument() { Id = "3", Content = "To be or not to be, that is the question" },
             new TestDocument() { Id = "4", Content = "All that glitters is not gold" },
-            new TestDocument() { Id = "5", Content = "The only thing we have to fear is fear itself" }
+            new TestDocument() { Id = "5", Content = "The only thing we have to fear is fear itself" },
         ];
 
         foreach (var document in _documents)
@@ -55,9 +56,18 @@ public class ApplicationTest
     }
 
     [TestMethod]
-    public void ExtactSearch()
+    public void Search1()
     {
         var result = _indexService.Search("The quick brown fox jumps over the lazy dog");
+        result = result.OrderByDescending(s => s.MatchedTokens.Count).ToList();
+        Assert.IsTrue(result.Count >= 1);
+        Assert.AreEqual("1", result[0].DocumentId);
+    }
+
+    [TestMethod]
+    public void Search2()
+    {
+        var result = _indexService.Search("dog");
         result = result.OrderByDescending(s => s.MatchedTokens.Count).ToList();
         Assert.IsTrue(result.Count >= 1);
         Assert.AreEqual("1", result[0].DocumentId);

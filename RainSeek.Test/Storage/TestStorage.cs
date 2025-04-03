@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RainSeek.Storage;
 using RainSeek.Tokenizer;
 
-namespace RainSeed.Tests.Application;
+namespace RainSeed.Tests.Storage;
 
 public class TestStorage : IIndexRepository, IDisposable, IAsyncDisposable
 {
@@ -51,10 +51,11 @@ public class TestStorage : IIndexRepository, IDisposable, IAsyncDisposable
         {
             tokenInfo.Add(new Token()
             {
+                Id = item.Id,
                 Value = token,
                 DocumentId = item.DocumentId,
                 StartPosition = item.StartPosition,
-                EndPosition = item.EndPosition
+                EndPosition = item.EndPosition,
             });
         }
 
@@ -87,6 +88,11 @@ public class TestStorage : IIndexRepository, IDisposable, IAsyncDisposable
 
         foreach (var item in indexEntry.TokenInfo)
         {
+            if (item.Id > 0)
+            {
+                // Token already exists, no need to add it again
+                continue;
+            }
             var tokenDocument = new TokensDocumentsEntity
             {
                 DocumentId = item.DocumentId,
@@ -97,6 +103,8 @@ public class TestStorage : IIndexRepository, IDisposable, IAsyncDisposable
             try
             {
                 _db.TokensDocuments.Add(tokenDocument);
+                _db.SaveChanges();
+                item.Id = tokenDocument.Id;
             }
             catch (Exception e)
             {
