@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using RainSeek.Indexing;
 
 namespace RainSeek.Tokenizer
 {
@@ -8,7 +9,7 @@ namespace RainSeek.Tokenizer
         public bool CaseSensitive { get; set; } = false;
         public IReadOnlyList<string> Delimiters { get; set; } = new[] { " " };
 
-        public IReadOnlyList<Token> Tokenize(string documentId, string input)
+        public IReadOnlyList<TokenModel> Tokenize(string content)
         {
             var basicTokenizer = new BasicTokenizer()
             {
@@ -16,9 +17,9 @@ namespace RainSeek.Tokenizer
                 Delimiters = Delimiters,
             };
 
-            var basicToken = basicTokenizer.Tokenize(documentId, input);
-            
-            var nGrams = new List<Token>();
+            var basicToken = basicTokenizer.Tokenize(content);
+
+            var nGrams = new List<TokenModel>();
 
             for (int i = 0; i < basicToken.Count; i++)
             {
@@ -26,9 +27,8 @@ namespace RainSeek.Tokenizer
                 for (int j = 0; j <= tokenValue.Length - N; j++)
                 {
                     var nGramValue = tokenValue.Substring(j, N);
-                    nGrams.Add(new Token
+                    nGrams.Add(new TokenModel
                     {
-                        DocumentId = documentId,
                         Value = nGramValue,
                         StartPosition = basicToken[i].StartPosition + j,
                         EndPosition = basicToken[i].StartPosition + j + N - 1
@@ -37,7 +37,6 @@ namespace RainSeek.Tokenizer
             }
 
             return nGrams;
-            
         }
     }
 }

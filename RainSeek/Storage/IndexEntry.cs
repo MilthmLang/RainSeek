@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using RainSeek.Indexing;
 using RainSeek.Tokenizer;
 
 namespace RainSeek.Storage
@@ -7,6 +8,6 @@ namespace RainSeek.Storage
     {
         public long Id = -1;
         public string Token;
-        public List<Token> TokenInfo;
+        public List<TokenEntity> TokenInfo;
     }
 }

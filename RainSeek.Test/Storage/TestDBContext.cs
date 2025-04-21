@@ -5,7 +5,7 @@ namespace RainSeed.Tests.Storage;
 public class TestDBContext : DbContext
 {
     public DbSet<TokenEntity> Tokens { get; set; }
-    public DbSet<TokensDocumentsEntity> TokensDocuments { get; set; }
+    public DbSet<DocumentTokenEntity> TokensDocuments { get; set; }
 
     public string DbPath { get; init; }
 
@@ -15,5 +15,7 @@ public class TestDBContext : DbContext
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite($"Data Source={DbPath}");
+    {
+        options.UseSqlite($"Data Source={DbPath}");
+    }
 }

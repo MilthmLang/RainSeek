@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RainSeek.Indexing;
 using RainSeek.Tokenizer;
 
 namespace RainSeed.Tests.Tokenizer;
@@ -14,20 +15,18 @@ public class BasicTokenizerTest
             Delimiters = [" "],
             CaseSensitive = true,
         };
-        var tokens = tokenizer.Tokenize("", "Hello World");
+        var tokens = tokenizer.Tokenize("Hello World");
         Assert.AreEqual(2, tokens.Count);
-        Assert.AreEqual(new Token()
+        Assert.AreEqual(new TokenModel()
         {
             Id = -1,
-            DocumentId = "",
             Value = "Hello",
             StartPosition = 0,
             EndPosition = 4,
         }, tokens[0]);
-        Assert.AreEqual(new Token()
+        Assert.AreEqual(new TokenModel()
         {
             Id = -1,
-            DocumentId = "",
             Value = "World",
             StartPosition = 6,
             EndPosition = 10,
@@ -42,20 +41,18 @@ public class BasicTokenizerTest
             Delimiters = [" ", ",", "!"],
             CaseSensitive = true,
         };
-        var tokens = tokenizer.Tokenize("", "Hello, World!");
+        var tokens = tokenizer.Tokenize("Hello, World!");
         Assert.AreEqual(2, tokens.Count);
-        Assert.AreEqual(new Token()
+        Assert.AreEqual(new TokenModel()
         {
             Id = -1,
-            DocumentId = "",
             Value = "Hello",
             StartPosition = 0,
             EndPosition = 4,
         }, tokens[0]);
-        Assert.AreEqual(new Token()
+        Assert.AreEqual(new TokenModel()
         {
             Id = -1,
-            DocumentId = "",
             Value = "World",
             StartPosition = 7,
             EndPosition = 11,

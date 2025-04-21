@@ -1,13 +1,17 @@
-using System;
+using System.Collections.Generic;
+using RainSeek.Indexing;
 
 namespace RainSeek.Storage
 {
     public interface IIndexRepository
     {
-        IndexEntry? FindOrNull(string name, string token);
+        TokenEntity? FindTokenByContent(string indexName, string tokenValue);
 
-        public void Add(string name, IndexEntry indexEntry);
+        TokenEntity AddToken(string indexName, string tokenValue);
 
-        public void Update(string name, IndexEntry existingEntry);
+        IReadOnlyList<DocumentTokenEntity> FindDocumentTokenByTokenId(string indexName, long tokenId);
+
+        DocumentTokenEntity AddDocumentToken(string indexName, long tokenId, string documentId, int startPosition,
+            int endPosition);
     }
 }

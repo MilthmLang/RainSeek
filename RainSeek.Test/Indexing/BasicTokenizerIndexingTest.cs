@@ -12,16 +12,18 @@ namespace RainSeed.Tests.Indexing;
 [TestClass]
 public class BasicTokenizerIndexingTest
 {
+    private static TestDBContext _db;
     private static IndexService _indexService = null!;
     private static List<TestDocument> _documents = null!;
-    private static TestStorage _storage;
+    private static EntityFrameworkRepository _storage;
 
     [ClassInitialize]
     public static void Init(TestContext ctx)
     {
         var path = Path.Combine(Environment.CurrentDirectory, "basic_tokenizer_indexing_test.db");
         File.Delete(path);
-        var storage = new TestStorage("basic_tokenizer_indexing_test", path);
+        var db = new TestDBContext(path);
+        var storage = new EntityFrameworkRepository("basic_tokenizer_indexing_test", db);
         var tokenizers = new[]
         {
             new BasicTokenizer()
@@ -32,6 +34,7 @@ public class BasicTokenizerIndexingTest
         };
         var indexService = new IndexService("basic_tokenizer_indexing_test", tokenizers, storage);
 
+        _db = db;
         _storage = storage;
         _indexService = indexService;
         _documents =
@@ -52,7 +55,7 @@ public class BasicTokenizerIndexingTest
     [ClassCleanup]
     public static void Destroy()
     {
-        _storage.Dispose();
+        _db.Dispose();
     }
 
     [TestMethod]

@@ -4,12 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RainSeed.Tests.Storage;
 
-[Index(nameof(TokenId), nameof(DocumentId), Name = "token_id_document_id")]
-[Index(nameof(DocumentId), nameof(TokenId), Name = "document_id_token_id")]
-[Index(nameof(TokenId), nameof(DocumentId), nameof(StartPosition), nameof(EndPosition)
-    , Name = "unique")]
-[Table("tokens_documents")]
-public class TokensDocumentsEntity
+public class DocumentTokenEntity
 {
     [Key] [Column("id")] public long Id { get; set; }
 

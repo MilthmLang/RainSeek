@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using RainSeek.Indexing;
 
 namespace RainSeek.Tokenizer
 {
@@ -8,17 +9,17 @@ namespace RainSeek.Tokenizer
 
         public bool CaseSensitive { get; set; } = false;
 
-        public IReadOnlyList<Token> Tokenize(string documentId, string input)
+        public IReadOnlyList<TokenModel> Tokenize(string content)
         {
-            var tokens = new List<Token>();
+            var tokens = new List<TokenModel>();
             int index = 0;
 
-            while (index < input.Length)
+            while (index < content.Length)
             {
                 bool isDelimiter = false;
                 foreach (var delimiter in Delimiters)
                 {
-                    if (input.Substring(index).StartsWith(delimiter))
+                    if (content.Substring(index).StartsWith(delimiter))
                     {
                         index += delimiter.Length;
                         isDelimiter = true;
@@ -29,12 +30,12 @@ namespace RainSeek.Tokenizer
                 if (isDelimiter) continue;
 
                 int start = index;
-                while (index < input.Length)
+                while (index < content.Length)
                 {
                     bool atDelimiter = false;
                     foreach (var delimiter in Delimiters)
                     {
-                        if (input.Substring(index).StartsWith(delimiter))
+                        if (content.Substring(index).StartsWith(delimiter))
                         {
                             atDelimiter = true;
                             break;
@@ -46,16 +47,15 @@ namespace RainSeek.Tokenizer
                 }
 
                 int end = index - 1;
-                var value = input.Substring(start, index - start);
+                var value = content.Substring(start, index - start);
 
                 if (!CaseSensitive)
                 {
                     value = value.ToLower();
                 }
 
-                tokens.Add(new Token
+                tokens.Add(new TokenModel
                 {
-                    DocumentId = documentId,
                     Value = value,
                     StartPosition = start,
                     EndPosition = end

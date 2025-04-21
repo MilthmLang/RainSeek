@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using RainSeek.Storage;
 using RainSeek.Tokenizer;
 
@@ -7,95 +8,103 @@ namespace RainSeek.Indexing
 {
     public class IndexService
     {
-        private readonly string _name;
+        private readonly string _indexName;
 
         private readonly IReadOnlyList<ITokenizer> _tokenizers;
 
         private readonly IIndexRepository _indexRepository;
 
-        public IndexService(string name, IReadOnlyList<ITokenizer> tokenizers, IIndexRepository indexRepository)
+        public IndexService(string indexName, IReadOnlyList<ITokenizer> tokenizers, IIndexRepository indexRepository)
         {
-            _name = name;
+            _indexName = indexName;
             _tokenizers = tokenizers;
             _indexRepository = indexRepository;
         }
 
-        public IndexService(string name, ITokenizer tokenizer, IIndexRepository indexRepository)
+        public IndexService(string indexName, ITokenizer tokenizer, IIndexRepository indexRepository)
         {
-            _name = name;
+            _indexName = indexName;
             _tokenizers = new ITokenizer[] { tokenizer };
             _indexRepository = indexRepository;
         }
 
-        public void AddDocument(string documentId, string content)
+        private List<TokenModel> Tokenize(string content)
         {
-            var tokens = new List<Token>();
-
+            var tokens = new List<TokenModel>();
             foreach (var tokenizer in _tokenizers)
             {
-                tokens.AddRange(tokenizer.Tokenize(documentId, content));
+                tokens.AddRange(tokenizer.Tokenize(content));
             }
 
+            return tokens;
+        }
+
+        public void AddDocument(string documentId, List<string> content)
+        {
+            var sb = new StringBuilder(64);
+            foreach (var item in content)
+            {
+                sb.Append(item).Append("\n");
+            }
+
+            AddDocument(documentId, sb.ToString());
+        }
+
+        public void AddDocument(string documentId, string content)
+        {
+            var tokens = Tokenize(content);
+            LinkDocumentToToken(documentId, tokens);
+        }
+
+        private void LinkDocumentToToken(string documentId, List<TokenModel> tokens)
+        {
             var aggregatedTokens = new SortedDictionary<string, IndexEntry>();
             foreach (var token in tokens)
             {
-                if (!aggregatedTokens.ContainsKey(token.Value))
-                {
-                    aggregatedTokens[token.Value] = new IndexEntry
-                    {
-                        Token = token.Value,
-                        TokenInfo = new List<Token> { token }
-                    };
-                }
-                else
-                {
-                    aggregatedTokens[token.Value].TokenInfo.Add(token);
-                }
-            }
+                var tokenEntity = _indexRepository.FindTokenByContent(_indexName, token.Value)
+                                  ?? _indexRepository.AddToken(_indexName, token.Value);
 
-            foreach (var (token, indexEntry) in aggregatedTokens)
-            {
-                var existingEntry = _indexRepository.FindOrNull(_name, token);
-                if (existingEntry == null)
-                {
-                    _indexRepository.Add(_name, indexEntry);
-                }
-                else
-                {
-                    existingEntry.TokenInfo.AddRange(indexEntry.TokenInfo);
-                    _indexRepository.Update(_name, existingEntry);
-                }
+                _indexRepository.AddDocumentToken(
+                    _indexName, tokenEntity.Id, documentId, token.StartPosition, token.EndPosition
+                );
             }
         }
 
-        public IReadOnlyList<SearchResultEntry> Search(string query)
+        public IReadOnlyList<SearchResult> Search(string query)
         {
-            var tokens = new List<Token>();
-
-            foreach (var tokenizer in _tokenizers)
-            {
-                tokens.AddRange(tokenizer.Tokenize("", query));
-            }
-
-            var results = new Dictionary<string, SearchResultEntry>();
+            var tokens = Tokenize(query);
+            var results = new Dictionary<string, SearchResult>();
 
             foreach (var token in tokens)
             {
-                var tokenEntry = _indexRepository.FindOrNull(_name, token.Value);
-                if (tokenEntry == null) continue;
-                foreach (var item in tokenEntry.TokenInfo)
+                var tokenEntity = _indexRepository.FindTokenByContent(_indexName, token.Value);
+                if (tokenEntity == null)
                 {
+                    continue;
+                }
+
+                var documentsToken = _indexRepository.FindDocumentTokenByTokenId(_indexName, tokenEntity.Id);
+
+                foreach (var item in documentsToken)
+                {
+                    var tokenModel = new TokenModel()
+                    {
+                        Value = tokenEntity.Content,
+                        StartPosition = item.StartPosition,
+                        EndPosition = item.EndPosition
+                    };
+
                     if (!results.ContainsKey(item.DocumentId))
                     {
-                        results[item.DocumentId] = new SearchResultEntry
+                        results[item.DocumentId] = new SearchResult
                         {
                             DocumentId = item.DocumentId,
-                            MatchedTokens = new List<Token> { item },
+                            MatchedTokens = new List<TokenModel> { tokenModel },
                         };
                     }
                     else
                     {
-                        results[item.DocumentId].MatchedTokens.Add(item);
+                        results[item.DocumentId].MatchedTokens.Add(tokenModel);
                     }
                 }
             }
