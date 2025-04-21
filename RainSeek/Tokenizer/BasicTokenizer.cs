@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using RainSeek.Indexing;
 
@@ -6,6 +7,7 @@ namespace RainSeek.Tokenizer
     public class BasicTokenizer : ITokenizer
     {
         public IReadOnlyList<string> Delimiters { get; set; } = new[] { " " };
+        public Func<TokenModel, bool> Predictor { get; set; } = _ => true;
 
         public bool CaseSensitive { get; set; } = false;
 
@@ -54,12 +56,16 @@ namespace RainSeek.Tokenizer
                     value = value.ToLower();
                 }
 
-                tokens.Add(new TokenModel
+                var newToken = new TokenModel
                 {
                     Value = value,
                     StartPosition = start,
                     EndPosition = end
-                });
+                };
+                if (Predictor(newToken))
+                {
+                    tokens.Add(newToken);
+                }
             }
 
             return tokens;

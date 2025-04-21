@@ -45,7 +45,7 @@ public class EntityFrameworkRepository : IIndexRepository
                                                 );
                                             """;
 
-        var t =_db.Database.ExecuteSqlRaw(createTokenEntityTable);
+        var t = _db.Database.ExecuteSqlRaw(createTokenEntityTable);
         _db.Database.ExecuteSqlRaw(createDocumentsTokensEntityTable);
     }
 

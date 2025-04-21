@@ -12,10 +12,10 @@ namespace RainSeed.Tests.Indexing;
 [TestClass]
 public class NGramTokenizerIndexingTest
 {
-    private static TestDBContext _db;
+    private static TestDBContext _db = null!;
     private static IndexService _indexService = null!;
     private static List<TestDocument> _documents = null!;
-    private static EntityFrameworkRepository _storage;
+    private static EntityFrameworkRepository _storage = null!;
 
     [ClassInitialize]
     public static void Init(TestContext ctx)

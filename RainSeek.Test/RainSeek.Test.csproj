@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Include="bin\Debug\net9.0\document-index.db" />
       <Content Include="bin\Debug\net9.0\System.Composition.Convention.dll" />
       <Content Include="bin\Debug\net9.0\test_index.db" />
     </ItemGroup>
