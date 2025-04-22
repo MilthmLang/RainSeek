@@ -4,8 +4,6 @@ namespace RainSeek.Tokenizer
 {
     public class TokenModel : IEquatable<TokenModel>
     {
-        public long Id = -1;
-
         public string Value;
 
         public int StartPosition;
@@ -16,8 +14,9 @@ namespace RainSeek.Tokenizer
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Id == other.Id && Value == other.Value &&
-                   StartPosition == other.StartPosition && EndPosition == other.EndPosition;
+            return Value == other.Value &&
+                   StartPosition == other.StartPosition &&
+                   EndPosition == other.EndPosition;
         }
 
         public override bool Equals(object? obj)
@@ -30,7 +29,7 @@ namespace RainSeek.Tokenizer
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Id, Value, StartPosition, EndPosition);
+            return HashCode.Combine(Value, StartPosition, EndPosition);
         }
     }
 }

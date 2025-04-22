@@ -19,14 +19,12 @@ public class BasicTokenizerTest
         Assert.AreEqual(2, tokens.Count);
         Assert.AreEqual(new TokenModel()
         {
-            Id = -1,
             Value = "Hello",
             StartPosition = 0,
             EndPosition = 4,
         }, tokens[0]);
         Assert.AreEqual(new TokenModel()
         {
-            Id = -1,
             Value = "World",
             StartPosition = 6,
             EndPosition = 10,
@@ -45,14 +43,12 @@ public class BasicTokenizerTest
         Assert.AreEqual(2, tokens.Count);
         Assert.AreEqual(new TokenModel()
         {
-            Id = -1,
             Value = "Hello",
             StartPosition = 0,
             EndPosition = 4,
         }, tokens[0]);
         Assert.AreEqual(new TokenModel()
         {
-            Id = -1,
             Value = "World",
             StartPosition = 7,
             EndPosition = 11,

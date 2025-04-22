@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RainSeek.Storage;
 
@@ -63,7 +62,7 @@ public class EntityFrameworkRepository : IIndexRepository
         return Convert.ToInt64(result);
     }
 
-    public RainSeek.Indexing.TokenEntity? FindTokenByContent(string indexName, string tokenValue)
+    public RainSeek.Storage.TokenEntity? FindTokenByContent(string indexName, string tokenValue)
     {
         if (_indexName != indexName)
         {
@@ -77,14 +76,14 @@ public class EntityFrameworkRepository : IIndexRepository
             return null;
         }
 
-        return new RainSeek.Indexing.TokenEntity()
+        return new RainSeek.Storage.TokenEntity()
         {
-            Id = entity.Id,
+            ID = entity.Id,
             Content = entity.Content,
         };
     }
 
-    public RainSeek.Indexing.TokenEntity AddToken(string indexName, string tokenValue)
+    public RainSeek.Storage.TokenEntity AddToken(string indexName, string tokenValue)
     {
         if (_indexName != indexName)
         {
@@ -103,14 +102,14 @@ public class EntityFrameworkRepository : IIndexRepository
             throw new Exception($"entity not found after insert: {id}");
         }
 
-        return new RainSeek.Indexing.TokenEntity()
+        return new RainSeek.Storage.TokenEntity()
         {
-            Id = entity.Id,
+            ID = entity.Id,
             Content = entity.Content,
         };
     }
 
-    public IReadOnlyList<RainSeek.Indexing.DocumentTokenEntity> FindDocumentTokenByTokenId(string indexName,
+    public IReadOnlyList<RainSeek.Storage.DocumentTokenEntity> FindDocumentTokenByTokenId(string indexName,
         long tokenId)
     {
         if (_indexName != indexName)
@@ -122,18 +121,18 @@ public class EntityFrameworkRepository : IIndexRepository
         var entities = _db.Set<DocumentTokenEntity>().FromSqlRaw(sql, tokenId).ToList();
 
         return entities.Select(s =>
-            new RainSeek.Indexing.DocumentTokenEntity()
+            new RainSeek.Storage.DocumentTokenEntity()
             {
-                Id = s.Id,
-                TokenId = s.TokenId,
-                DocumentId = s.DocumentId,
+                ID = s.Id,
+                TokenID = s.TokenId,
+                DocumentID = s.DocumentId,
                 StartPosition = s.StartPosition,
                 EndPosition = s.EndPosition,
             }
         ).ToList();
     }
 
-    public RainSeek.Indexing.DocumentTokenEntity AddDocumentToken(string indexName,
+    public RainSeek.Storage.DocumentTokenEntity AddDocumentToken(string indexName,
         long tokenId,
         string documentId,
         int startPosition,
@@ -157,11 +156,11 @@ public class EntityFrameworkRepository : IIndexRepository
             throw new Exception($"entity not found after insert: {id}");
         }
 
-        return new RainSeek.Indexing.DocumentTokenEntity()
+        return new RainSeek.Storage.DocumentTokenEntity()
         {
-            Id = entity.Id,
-            TokenId = entity.TokenId,
-            DocumentId = entity.DocumentId,
+            ID = entity.Id,
+            TokenID = entity.TokenId,
+            DocumentID = entity.DocumentId,
             StartPosition = entity.StartPosition,
             EndPosition = entity.EndPosition,
         };

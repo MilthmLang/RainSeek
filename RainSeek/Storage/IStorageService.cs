@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using RainSeek.Indexing;
+using RainSeek.Storage;
 
 namespace RainSeek.Storage
 {

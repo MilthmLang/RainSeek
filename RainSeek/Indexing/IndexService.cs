@@ -58,14 +58,13 @@ namespace RainSeek.Indexing
 
         private void LinkDocumentToToken(string documentId, List<TokenModel> tokens)
         {
-            var aggregatedTokens = new SortedDictionary<string, IndexEntry>();
             foreach (var token in tokens)
             {
                 var tokenEntity = _indexRepository.FindTokenByContent(_indexName, token.Value)
                                   ?? _indexRepository.AddToken(_indexName, token.Value);
 
                 _indexRepository.AddDocumentToken(
-                    _indexName, tokenEntity.Id, documentId, token.StartPosition, token.EndPosition
+                    _indexName, tokenEntity.ID, documentId, token.StartPosition, token.EndPosition
                 );
             }
         }
@@ -73,17 +72,28 @@ namespace RainSeek.Indexing
         public IReadOnlyList<SearchResult> Search(string query)
         {
             var tokens = Tokenize(query);
+            return Search(tokens);
+        }
+
+        public IReadOnlyList<SearchResult> Search(IReadOnlyCollection<TokenModel> tokens)
+        {
+            var strs = tokens.Select(t => t.Value).ToList();
+            return Search(strs);
+        }
+
+        public IReadOnlyList<SearchResult> Search(IReadOnlyCollection<string> tokens)
+        {
             var results = new Dictionary<string, SearchResult>();
 
             foreach (var token in tokens)
             {
-                var tokenEntity = _indexRepository.FindTokenByContent(_indexName, token.Value);
+                var tokenEntity = _indexRepository.FindTokenByContent(_indexName, token);
                 if (tokenEntity == null)
                 {
                     continue;
                 }
 
-                var documentsToken = _indexRepository.FindDocumentTokenByTokenId(_indexName, tokenEntity.Id);
+                var documentsToken = _indexRepository.FindDocumentTokenByTokenId(_indexName, tokenEntity.ID);
 
                 foreach (var item in documentsToken)
                 {
@@ -94,17 +104,17 @@ namespace RainSeek.Indexing
                         EndPosition = item.EndPosition
                     };
 
-                    if (!results.ContainsKey(item.DocumentId))
+                    if (!results.ContainsKey(item.DocumentID))
                     {
-                        results[item.DocumentId] = new SearchResult
+                        results[item.DocumentID] = new SearchResult
                         {
-                            DocumentId = item.DocumentId,
+                            DocumentId = item.DocumentID,
                             MatchedTokens = new List<TokenModel> { tokenModel },
                         };
                     }
                     else
                     {
-                        results[item.DocumentId].MatchedTokens.Add(tokenModel);
+                        results[item.DocumentID].MatchedTokens.Add(tokenModel);
                     }
                 }
             }
