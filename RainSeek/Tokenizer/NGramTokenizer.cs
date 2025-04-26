@@ -8,6 +8,7 @@ namespace RainSeek.Tokenizer
         public int N { get; set; } = 3;
         public bool CaseSensitive { get; set; } = false;
         public IReadOnlyList<string> Delimiters { get; set; } = new[] { " " };
+        public bool IncludeShortTokens { get; set; } = false;
 
         public IReadOnlyList<TokenModel> Tokenize(string content)
         {
@@ -23,6 +24,23 @@ namespace RainSeek.Tokenizer
 
             for (int i = 0; i < basicToken.Count; i++)
             {
+                if (basicToken[i].Value.Length < N)
+                {
+                    if (IncludeShortTokens)
+                    {
+                        nGrams.Add(new TokenModel
+                        {
+                            Value = basicToken[i].Value,
+                            StartPosition = basicToken[i].StartPosition,
+                            EndPosition = basicToken[i].EndPosition
+                        });
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
                 var tokenValue = basicToken[i].Value;
                 for (int j = 0; j <= tokenValue.Length - N; j++)
                 {

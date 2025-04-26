@@ -55,4 +55,28 @@ public class NGramTokenizerTest
             EndPosition = 10,
         }, tokens[5]);
     }
+
+
+    [TestMethod]
+    public void ShortTokenTest()
+    {
+        var noShortToken = new NGramTokenizer()
+        {
+            N = 6,
+            Delimiters = [" "],
+            CaseSensitive = true,
+        };
+        var noShortTokenResult = noShortToken.Tokenize("Hello World");
+        Assert.AreEqual(0, noShortTokenResult.Count);
+
+        var withShortToken = new NGramTokenizer()
+        {
+            N = 6,
+            Delimiters = [" "],
+            CaseSensitive = true,
+            IncludeShortTokens = true,
+        };
+        var withShortTokenResult = withShortToken.Tokenize("Hello World");
+        Assert.AreEqual(2, withShortTokenResult.Count);
+    }
 }
